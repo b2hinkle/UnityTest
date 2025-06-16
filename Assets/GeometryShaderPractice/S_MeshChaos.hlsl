@@ -27,9 +27,14 @@ struct VertexOutput
     float4 positionCS : SV_POSITION; // Position in clip space.
 };
 
+// Declare variables coresponding to the shaderlab properties.
+// This is so that our shader code can access these properties.
+// Make sure that the names match the properties in the shaderlab file (the .shader), otherwise, they won't get their values.
+
+// Texture properties are special, they get 3 variables generated for them (which we've accounted for below).
 TEXTURE2D(_MainTex);
 SAMPLER(sampler_MainTex);
-float4 _MainTex_ST;
+float4 _MainTex_ST; // _ST suffix in Unity shaders is shorthand for Scale and Translation.
 
 VertexOutput Vertex(Attributes input)
 {
@@ -45,7 +50,7 @@ VertexOutput Vertex(Attributes input)
     VertexNormalInputs normalInput = GetVertexNormalInputs(input.normalOS, input.tangentOS);
     output.normalWS = normalInput.normalWS;
     
-    // TRANSFORM_TEX is a macro which scales and offsets the UVs based on the _MainTex_ST variable.
+    // TRANSFORM_TEX is a macro which scales and offsets the UVs based on the _MainTex_ST variable. The 2nd argument of the macro will expand to append the expected _ST suffex.
     output.uv = TRANSFORM_TEX(input.uv, _MainTex);
     
     return output;
@@ -54,7 +59,9 @@ VertexOutput Vertex(Attributes input)
 // The SV_Target semantic tells the compiler that this function outputs the pixel color.
 float4 Fragment(VertexOutput input) : SV_Target
 {
-    return float4(1, 1, 1, 1);
+    float3 albedo = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, input.uv).rgb;
+    
+    return float4(albedo, 1);
 }
 
 #endif
