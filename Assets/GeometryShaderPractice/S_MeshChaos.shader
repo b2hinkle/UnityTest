@@ -29,9 +29,11 @@ Shader "Custom/S_MeshChaos"
             // List required lighting and shadow keywords.
             #pragma multi_compile _ _MAIN_LIGHT_SHADOWS
             #pragma multi_compile _ _MAIN_LIGHT_SHADOWS_CASCADE
+            #pragma multi_compile _ _MAIN_LIGHT_SHADOWS_SCREEN
             #pragma multi_compile _ _ADDITIONAL_LIGHTS
             #pragma multi_compile _ _ADDITIONAL_LIGHT_SHADOWS
             #pragma multi_compile _ _SHADOWS_SOFT
+
             
             // Register functions.
             #pragma vertex Vertex
@@ -41,6 +43,13 @@ Shader "Custom/S_MeshChaos"
             #include "S_MeshChaos.hlsl"
 
             ENDHLSL
+        }
+
+        Pass
+        {
+            Name "ShadowCasting"
+            Tags{ "LightMode" = "ShadowCaster" }
+            Cull Back
         }
     }
 }

@@ -86,6 +86,16 @@ float4 Fragment(VertexOutput input) : SV_Target
     args.normalWS = input.normalWS;
     args.viewDirectionWS = GetWorldSpaceViewDir(input.positionWS);
     args.smoothness = _Smoothness;
+    args.positionWS = input.positionWS;
+    
+    // Calculate the main light shadow coord.
+    // There are two types depending on if cascades are enabled.
+    #if SHADOWS_SCREEN
+        args.shadowCoord = ComputeScreenPos(input.positionCS);
+    #else
+        args.shadowCoord = TransformWorldToShadowCoord(input.positionWS);
+    #endif
+
     return float4(BlinnPhongShading(args), 1);
 }
 

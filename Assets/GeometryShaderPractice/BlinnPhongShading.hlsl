@@ -5,7 +5,8 @@
 
 struct BlinnPhongShadingArgs
 {
-    // Surface attributes.
+    float4 shadowCoord;
+    float3 positionWS;
     float3 albedo;
     float3 normalWS;
     float3 viewDirectionWS;
@@ -20,7 +21,7 @@ float GetSmoothnessPower(float rawSmoothness)
 
 float3 LightingFormula(BlinnPhongShadingArgs args, Light light)
 {
-    float3 radiance = light.color;
+    float3 radiance = light.color * light.shadowAttenuation;
     
     float diffuse = saturate(dot(args.normalWS, light.direction));
     float specularDot = saturate(dot(args.normalWS, normalize(light.direction + args.viewDirectionWS))); // Calculate specular.
@@ -34,7 +35,8 @@ float3 LightingFormula(BlinnPhongShadingArgs args, Light light)
 
 float3 BlinnPhongShading(BlinnPhongShadingArgs args)
 {
-    Light mainLight = GetMainLight();
+    float shadowMask = 1;
+    Light mainLight = GetMainLight(args.shadowCoord, args.positionWS, shadowMask);
     
     float3 color = 0;
     color += LightingFormula(args, mainLight);
