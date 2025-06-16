@@ -37,7 +37,6 @@ Shader "Custom/S_MeshChaos"
             //#pragma geometry geo
             #pragma fragment Fragment
 
-            #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Common.hlsl"
             #include "S_MeshChaos.hlsl"
 
             ENDHLSL

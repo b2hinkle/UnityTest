@@ -2,13 +2,16 @@
 #ifndef S_MESHCHAOS_INCLUDED
 #define S_MESHCHAOS_INCLUDED
 
+// Include helper functions and macros (e.g. TEXTURE2D, VertexPositionInputs).
+#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
+
 // This structure is created by the renderer and passed to the Vertex function.
 // It holds data stored on the model, per vertex.
 struct Attributes
 {
     float4 positionOS : POSITION;  // Position in object space.
     float3 normalOS   : NORMAL;    // Normal in object space.
-    float3 tangentOS  : TANGENT;   // Tangent in object space (plut bitangent sign).
+    float4 tangentOS  : TANGENT;   // Tangent in object space (plut bitangent sign).
     float2 uv         : TEXCOORD0; // UVs.
     
     // Other common semantics include COLOR.
@@ -30,14 +33,25 @@ float4 _MainTex_ST;
 
 VertexOutput Vertex(Attributes input)
 {
+    // Initialize an output struct.
     VertexOutput output = (VertexOutput)0;
+    
+    // Use this URP function to convert position to world space.
+    VertexPositionInputs vertexInput = GetVertexPositionInputs(input.positionOS.xyz);
+    output.positionWS = vertexInput.positionWS;
+    output.positionCS = vertexInput.positionCS;
+    
+    // Use this URP function to convert normal to world space.
+    VertexNormalInputs normalInput = GetVertexNormalInputs(input.normalOS, input.tangentOS);
+    output.normalWS = normalInput.normalWS;
+    
     return output;
 }
 
 // The SV_Target semantic tells the compiler that this function outputs the pixel color.
 float4 Fragment(VertexOutput input) : SV_Target
 {
-    return float4(1, 1, 1, 1);
+    return float4(0, 1, 0, 1);
 }
 
 #endif
