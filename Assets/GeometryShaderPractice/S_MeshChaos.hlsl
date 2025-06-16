@@ -4,6 +4,8 @@
 
 // Include helper functions and macros (e.g. TEXTURE2D, VertexPositionInputs).
 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
+#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
+#include "BlinnPhongShading.hlsl"
 
 // This structure is created by the renderer and passed to the Vertex function.
 // It holds data stored on the model, per vertex.
@@ -36,6 +38,8 @@ TEXTURE2D(_MainTex);
 SAMPLER(sampler_MainTex);
 float4 _MainTex_ST; // _ST suffix in Unity shaders is shorthand for Scale and Translation.
 
+float _Smoothness;
+
 VertexOutput Vertex(Attributes input)
 {
     // Initialize an output struct.
@@ -59,9 +63,30 @@ VertexOutput Vertex(Attributes input)
 // The SV_Target semantic tells the compiler that this function outputs the pixel color.
 float4 Fragment(VertexOutput input) : SV_Target
 {
+    //// Initialize some information for the lighting function.
+    //InputData lightingInput = (InputData)0;
+    //lightingInput.positionWS = input.positionWS;
+    //lightingInput.normalWS = NormalizeNormalPerPixel(input.normalWS); // Renormalize to avoid interpolation errors.
+    //lightingInput.viewDirectionWS = GetWorldSpaceViewDir(input.positionWS);
+    //lightingInput.shadowCoord = TransformWorldToShadowCoord(input.positionWS);
+    
+    // Read the main texture.
     float3 albedo = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, input.uv).rgb;
     
-    return float4(albedo, 1);
+    //// Call URP's simple lighting function.
+    //// The arguments are lightingInput, albedo color, smoothness, emission color, and alpha.
+    //float specularColor = 1;
+    //float smoothness = 0;
+    //float emissionColor = 0;
+    //float alpha = 1;
+    //return UniversalFragmentBlinnPhong(lightingInput, albedo, specularColor, smoothness, emissionColor, alpha);
+    
+    BlinnPhongShadingArgs args;
+    args.albedo = albedo;
+    args.normalWS = input.normalWS;
+    args.viewDirectionWS = GetWorldSpaceViewDir(input.positionWS);
+    args.smoothness = _Smoothness;
+    return float4(BlinnPhongShading(args), 1);
 }
 
 #endif

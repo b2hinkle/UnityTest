@@ -6,6 +6,7 @@ Shader "Custom/S_MeshChaos"
     {
         // Shader properties which are editable in the material.
         _MainTex ("Texture", 2D) = "white" {}
+        _Smoothness("Smoothness", Float) = .5
     }
     SubShader
     {
