@@ -21,7 +21,7 @@ struct Attributes
 struct VertexOutput
 {
     float3 positionWS : TEXCOORD0;   // Position in world space.
-    float3 uv         : TEXCOORD1;   // UVs.
+    float2 uv         : TEXCOORD1;   // UVs.
     float3 normalWS   : TEXCOORD2;   // Normal in world space.
     
     float4 positionCS : SV_POSITION; // Position in clip space.
@@ -45,13 +45,16 @@ VertexOutput Vertex(Attributes input)
     VertexNormalInputs normalInput = GetVertexNormalInputs(input.normalOS, input.tangentOS);
     output.normalWS = normalInput.normalWS;
     
+    // TRANSFORM_TEX is a macro which scales and offsets the UVs based on the _MainTex_ST variable.
+    output.uv = TRANSFORM_TEX(input.uv, _MainTex);
+    
     return output;
 }
 
 // The SV_Target semantic tells the compiler that this function outputs the pixel color.
 float4 Fragment(VertexOutput input) : SV_Target
 {
-    return float4(0, 1, 0, 1);
+    return float4(1, 1, 1, 1);
 }
 
 #endif
