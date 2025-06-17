@@ -1,4 +1,3 @@
-// Learning material for this shader https://www.youtube.com/watch?v=7C-mA08mp8o
 // The shader name and folder as displayed in the shader picker dialogue in a material.
 Shader "Custom/S_MeshChaos"
 {

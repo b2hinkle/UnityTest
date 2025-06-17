@@ -1,3 +1,7 @@
+// Learning material used:
+//  - https://www.youtube.com/watch?v=7C-mA08mp8o (original custom lighting tutorial for forward render path).
+//    - NOTE that I only watched up to the additional lights section.
+//  - https://github.com/rsofia/CustomLightingForwardPlus (Improvements to the original to support forward+ render path).
 #ifndef BlinnPhongShading_INCLUDED
 #define BlinnPhongShading_INCLUDED
 
@@ -7,6 +11,7 @@ struct BlinnPhongShadingArgs
 {
     float4 shadowCoord;
     float3 positionWS;
+    float3 positionCS;
     float3 albedo;
     float3 normalWS;
     float3 viewDirectionWS;
@@ -41,15 +46,26 @@ float3 BlinnPhongShading(BlinnPhongShadingArgs args)
     float3 color = 0;
     color += LightingFormula(args, mainLight);
     
-    #ifdef _ADDITIONAL_LIGHTS
-        // Shade additional cone and point lights. Functions int URP/ShaderLibrary/Lighting.hlsl
-        uint numAdditionalLights = GetAdditionalLightsCount();
-        for (uint lightI = 0; lightI < numAdditionalLights; lightI++)
-        {
-            Light light = GetAdditionalLight(lightI, args.positionWS, shadowMask);
-            color += LightingFormula(args, light);
-        }
-    #endif
+    #ifdef _FORWARD_PLUS
+        #ifdef _ADDITIONAL_LIGHTS
+            // Shade additional cone and point lights. Functions int URP/ShaderLibrary/Lighting.hlsl    
+            InputData inputData = (InputData)0;
+            inputData.positionWS = args.positionWS;
+            inputData.normalWS = args.normalWS;
+            inputData.viewDirectionWS = args.viewDirectionWS;
+            inputData.shadowCoord = args.shadowCoord;
+    
+            // Forward+ rendering culls additional lights at certain distance. Make sure to use clip position to account for this.
+            float4 screenPos = float4(args.positionCS.x, (_ScaledScreenParams.y - args.positionCS.y), 0, 0);
+            inputData.normalizedScreenSpaceUV = GetNormalizedScreenSpaceUV(screenPos);
+    
+            uint numAdditionalLights = GetAdditionalLightsCount();
+            LIGHT_LOOP_BEGIN(numAdditionalLights)
+                Light light = GetAdditionalLight(lightIndex, args.positionWS, shadowMask);
+                color += LightingFormula(args, light);
+            LIGHT_LOOP_END
+        #endif
+    #endif  //end _FORWARD_PLUS
     
     return color;
 }

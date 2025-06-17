@@ -87,6 +87,7 @@ float4 Fragment(VertexOutput input) : SV_Target
     args.viewDirectionWS = GetWorldSpaceViewDir(input.positionWS);
     args.smoothness = _Smoothness;
     args.positionWS = input.positionWS;
+    args.positionWS = input.positionWS;
     
     // Calculate the main light shadow coord.
     // There are two types depending on if cascades are enabled.
