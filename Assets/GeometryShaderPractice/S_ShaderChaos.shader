@@ -1,5 +1,5 @@
 // The shader name and folder as displayed in the shader picker dialogue in a material.
-Shader "Custom/S_MeshChaos"
+Shader "Custom/S_ShaderChaos"
 {
     Properties
     {
@@ -37,10 +37,10 @@ Shader "Custom/S_MeshChaos"
             
             // Register functions.
             #pragma vertex Vertex
-            //#pragma geometry geo
+            //#pragma geometry Geometry
             #pragma fragment Fragment
 
-            #include "CustomLighting.hlsl"
+            #include "ShaderChaos.hlsl"
 
             ENDHLSL
         }
