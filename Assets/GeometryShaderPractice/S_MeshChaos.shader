@@ -40,7 +40,7 @@ Shader "Custom/S_MeshChaos"
             //#pragma geometry geo
             #pragma fragment Fragment
 
-            #include "S_MeshChaos.hlsl"
+            #include "CustomLighting.hlsl"
 
             ENDHLSL
         }
