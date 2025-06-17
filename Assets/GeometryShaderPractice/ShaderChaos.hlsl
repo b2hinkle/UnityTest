@@ -38,6 +38,7 @@ SAMPLER(sampler_MainTex);
 float4 _MainTex_ST; // _ST suffix in Unity shaders is shorthand for Scale and Translation.
 
 float _Smoothness;
+bool _CelShadeTest;
 
 VertexOutput Vertex(Attributes input)
 {
@@ -86,13 +87,14 @@ float4 Fragment(VertexOutput input) : SV_Target
     //float alpha = 1;
     //return UniversalFragmentBlinnPhong(lightingInput, albedo, specularColor, smoothness, emissionColor, alpha);
     
-    BlinnPhongShadingArgs args;
+    CustomShadingArgs args;
     args.albedo = albedo;
     args.normalWS = input.normalWS;
     args.viewDirectionWS = GetWorldSpaceViewDir(input.positionWS);
     args.smoothness = _Smoothness;
     args.positionWS = input.positionWS;
     args.positionCS = input.positionCS;
+    args.celShadeTest = _CelShadeTest;
     
     // Calculate the main light shadow coord.
     // There are two types depending on if cascades are enabled.

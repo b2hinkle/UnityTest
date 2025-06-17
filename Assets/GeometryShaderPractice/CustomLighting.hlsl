@@ -9,7 +9,7 @@
 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
 
-struct BlinnPhongShadingArgs
+struct CustomShadingArgs
 {
     float4 shadowCoord;
     float3 positionWS;
@@ -18,6 +18,7 @@ struct BlinnPhongShadingArgs
     float3 normalWS;
     float3 viewDirectionWS;
     float smoothness;
+    bool celShadeTest;
 };
 
 // Translate a [0, 1] smoothness value to an exponent.
@@ -26,11 +27,25 @@ float GetSmoothnessPower(float rawSmoothness)
     return exp2(10 * rawSmoothness + 1);
 }
 
-float3 LightingFormula(BlinnPhongShadingArgs args, Light light)
+float3 LightingFormula(CustomShadingArgs args, Light light)
 {
     float3 radiance = light.color * (light.distanceAttenuation * light.shadowAttenuation);
     
     float diffuse = saturate(dot(args.normalWS, light.direction));
+    
+    // Show cel shade test if checked.
+    if (args.celShadeTest)
+    {
+        if (diffuse > .5)
+        {
+            radiance = light.color;
+        }
+        else
+        {
+            radiance = float3(0, 0, 0);
+        }
+    }
+    
     float specularDot = saturate(dot(args.normalWS, normalize(light.direction + args.viewDirectionWS))); // Calculate specular.
     float specular = pow(specularDot, GetSmoothnessPower(args.smoothness));
     specular *= diffuse; // Multiply with diffuse result so that unlit diffuse sections don't have specular highlight.
@@ -40,7 +55,7 @@ float3 LightingFormula(BlinnPhongShadingArgs args, Light light)
     return color;
 }
 
-float3 BlinnPhongShading(BlinnPhongShadingArgs args)
+float3 BlinnPhongShading(CustomShadingArgs args)
 {
     float shadowMask = 1;
     Light mainLight = GetMainLight(args.shadowCoord, args.positionWS, shadowMask);
