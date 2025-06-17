@@ -68,24 +68,9 @@ VertexOutput Vertex(Attributes input)
 
 // The SV_Target semantic tells the compiler that this function outputs the pixel color.
 float4 Fragment(VertexOutput input) : SV_Target
-{
-    //// Initialize some information for the lighting function.
-    //InputData lightingInput = (InputData)0;
-    //lightingInput.positionWS = input.positionWS;
-    //lightingInput.normalWS = NormalizeNormalPerPixel(input.normalWS); // Renormalize to avoid interpolation errors.
-    //lightingInput.viewDirectionWS = GetWorldSpaceViewDir(input.positionWS);
-    //lightingInput.shadowCoord = TransformWorldToShadowCoord(input.positionWS);
-    
+{    
     // Read the main texture.
     float3 albedo = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, input.uv).rgb;
-    
-    //// Call URP's simple lighting function.
-    //// The arguments are lightingInput, albedo color, smoothness, emission color, and alpha.
-    //float specularColor = 1;
-    //float smoothness = 0;
-    //float emissionColor = 0;
-    //float alpha = 1;
-    //return UniversalFragmentBlinnPhong(lightingInput, albedo, specularColor, smoothness, emissionColor, alpha);
     
     CustomShadingArgs args;
     args.albedo = albedo;
