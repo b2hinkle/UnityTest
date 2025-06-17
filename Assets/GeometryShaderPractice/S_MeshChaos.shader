@@ -33,6 +33,7 @@ Shader "Custom/S_MeshChaos"
             #pragma multi_compile _ _ADDITIONAL_LIGHTS
             #pragma multi_compile _ _ADDITIONAL_LIGHT_SHADOWS
             #pragma multi_compile _ _SHADOWS_SOFT
+            #pragma multi_compile _ _FORWARD_PLUS
 
             
             // Register functions.
